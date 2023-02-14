@@ -22,7 +22,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-
+db.users = require("./user.model.js")(sequelize, Sequelize);
 db.leagues = require("./league.model.js")(sequelize, Sequelize);
 db.trades = require("./trade.model.js")(sequelize, Sequelize);
 
