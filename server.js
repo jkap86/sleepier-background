@@ -6,7 +6,7 @@ const WORKERS = process.env.WEB_CONCURRENCY || 1;
 
 setInterval(() => {
     https.get('https://sleepiertest.herokuapp.com/')
-}, .5 * 60 * 1000);
+}, 29 * 60 * 1000);
 
 throng({
     worker: start,
@@ -36,6 +36,10 @@ function start() {
 
 
     require("./app/routes/sync.routes")(app);
+
+    app.get('/', (req, res) => {
+        res.send('ping')
+    })
 
     app.get('*', async (req, res) => {
         res.sendFile(path.join(__dirname, '../client/build/index.html'));
