@@ -26,12 +26,16 @@ axiosRetry(axios, {
 })
 
 exports.trades = async (app) => {
-    let interval = 1.5 * 60 * 1000
+    let interval = 1 * 60 * 1000
 
-    setTimeout(async () => {
-        await updateTrades(app)
-
-        await exports.trades(app)
+    setInterval(async () => {
+        if (app.get('syncing') !== 'true') {
+            console.log(`Begin Transactions Sync at ${new Date()}`)
+            app.set('syncing', 'true')
+            await updateTrades(app)
+            app.set('syncing', 'false')
+            console.log(`Transactions Sync completed at ${new Date()}`)
+        }
 
         const used = process.memoryUsage()
         for (let key in used) {
@@ -42,7 +46,7 @@ exports.trades = async (app) => {
 
 
 const updateTrades = async (app) => {
-    console.log(`Begin Transactions Sync at ${new Date()}`)
+
 
     const state = await axios.get('https://api.sleeper.app/v1/state/nfl')
     let i = app.get('trades_sync_counter') || 0
@@ -146,6 +150,6 @@ const updateTrades = async (app) => {
         app.set('trades_sync_counter', i + increment)
     }
 
-    console.log(`Transactions Sync completed at ${new Date()}`)
+
     return
 }
