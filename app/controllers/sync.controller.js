@@ -240,6 +240,8 @@ const updateTrades = async (app) => {
 
                     const draft_picks = transaction.draft_picks.map(pick => {
                         const roster = league.dataValues.rosters.find(x => x.roster_id === pick.roster_id)
+                        const new_roster = league.dataValues.rosters.find(x => x.roster_id === pick.owner_id)
+                        const old_roster = league.dataValues.rosters.find(x => x.roster_id === pick.previous_owner_id)
 
                         return {
                             ...pick,
@@ -247,6 +249,16 @@ const updateTrades = async (app) => {
                                 user_id: roster?.user_id,
                                 username: roster?.username,
                                 avatar: roster?.avatar,
+                            },
+                            new_user: {
+                                user_id: new_roster?.user_id,
+                                username: new_roster?.username,
+                                avatar: new_roster?.avatar,
+                            },
+                            old_user: {
+                                user_id: old_roster?.user_id,
+                                username: old_roster?.username,
+                                avatar: old_roster?.avatar,
                             },
                             order: draft_order && roster?.user_id ? draft_order[roster?.user_id] : null
                         }
