@@ -164,15 +164,37 @@ const getLeaguemateLeagues = async (app, state) => {
 
     let new_users_to_update = await User.findAll({
         where: {
-            updatedAt: {
-                [Op.gt]: lm_leagues_cutoff
-            }
+            [Op.or]: [
+                {
+                    updatedAt: {
+                        [Op.lt]: new Date(new Date() - 24 * 60 * 60 * 1000)
+                    }
+                },
+                {
+                    createdAt: {
+                        [Op.gt]: lm_leagues_cutoff
+                    }
+                }
+            ]
         }
     })
 
     let all_users_to_update = Array.from(new Set([...users_to_update, ...new_users_to_update.map(user => user.dataValues.user_id)].flat()))
 
     let users_to_update_batch = all_users_to_update.slice(0, 500)
+
+    const users_to_update_batch_time = users_to_update_batch.map(user => {
+        return {
+            user_id: user,
+            updatedAt: new Date()
+        }
+    })
+
+    try {
+        await User.bulkCreate(users_to_update_batch_time, { updateOnDuplicate: ['updatedAt'] })
+    } catch (error) {
+        console.log(error)
+    }
 
     console.log(`Updating ${users_to_update_batch.length} of ${all_users_to_update.length} Total Users (${users_to_update.length} Existing, ${new_users_to_update.length} New)
         : ${all_users_to_update.filter(user_id => !users_to_update_batch.includes(user_id)).length} Users pending...`)
