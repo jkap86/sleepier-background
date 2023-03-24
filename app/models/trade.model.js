@@ -1,5 +1,7 @@
 'use strict'
 
+const { DataTypes } = require("sequelize");
+
 module.exports = (sequelize, Sequelize) => {
     const Trade = sequelize.define("trade", {
         transaction_id: {
@@ -20,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         managers: {
-            type: Sequelize.JSONB
+            type: DataTypes.ARRAY(DataTypes.STRING)
         },
         adds: {
             type: Sequelize.JSONB
